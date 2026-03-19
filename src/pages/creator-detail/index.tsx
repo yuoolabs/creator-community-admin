@@ -12,8 +12,8 @@ import { Avatar, Button, Card, Col, Empty, Pagination, Row, Space, Tag, Typograp
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import PlatformBadge from '../../components/common/PlatformBadge'
-import { figmaAssets } from '../../mocks/assets'
 import { creatorManagementRows } from '../../mocks/creatorManagement'
+import { postRows } from '../../mocks/worksReview'
 
 const { Text, Title } = Typography
 
@@ -32,6 +32,8 @@ type WorkItem = {
   warnText?: string
 }
 
+const workCoverRows = postRows.slice(0, 6)
+
 const works: WorkItem[] = [
   {
     id: 'w1',
@@ -40,7 +42,7 @@ const works: WorkItem[] = [
     date: '2023-10-24',
     views: '12.5k',
     likes: '892',
-    cover: figmaAssets.proof1,
+    cover: workCoverRows[0]?.coverUrl ?? '',
     status: 'published',
     actionText: '查看',
   },
@@ -51,7 +53,7 @@ const works: WorkItem[] = [
     date: '2023-10-22',
     views: '16.2k',
     likes: '1.2k',
-    cover: figmaAssets.proof2,
+    cover: workCoverRows[1]?.coverUrl ?? '',
     status: 'reviewing',
     actionText: '详情',
   },
@@ -62,7 +64,7 @@ const works: WorkItem[] = [
     date: '2023-10-24',
     views: '12.5k',
     likes: '892',
-    cover: figmaAssets.proof1,
+    cover: workCoverRows[2]?.coverUrl ?? '',
     status: 'published',
     actionText: '查看',
   },
@@ -73,7 +75,7 @@ const works: WorkItem[] = [
     date: '2023-10-15',
     views: '45.2k',
     likes: '3.4k',
-    cover: figmaAssets.proof4,
+    cover: workCoverRows[3]?.coverUrl ?? '',
     status: 'published',
     actionText: '查看',
   },
@@ -84,7 +86,7 @@ const works: WorkItem[] = [
     date: '2023-10-01',
     views: '8.8k',
     likes: '516',
-    cover: figmaAssets.proof5,
+    cover: workCoverRows[4]?.coverUrl ?? '',
     status: 'rejected',
     actionText: '查看原因',
     warnText: '内容包含违禁词',
@@ -96,7 +98,7 @@ const works: WorkItem[] = [
     date: '2023-10-24',
     views: '12.5k',
     likes: '892',
-    cover: figmaAssets.proof1,
+    cover: workCoverRows[5]?.coverUrl ?? '',
     status: 'published',
     actionText: '查看',
   },
