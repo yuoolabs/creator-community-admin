@@ -1,6 +1,6 @@
-import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message, Alert, Pagination, Radio, Upload } from 'antd'
-import { QuestionCircleOutlined, HolderOutlined, SearchOutlined, InfoCircleFilled, CloseCircleFilled, PlusOutlined } from '@ant-design/icons'
-import { useState, useMemo } from 'react'
+import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message, Radio, Upload } from 'antd'
+import { QuestionCircleOutlined, HolderOutlined, CloseCircleFilled, PlusOutlined } from '@ant-design/icons'
+import { useState } from 'react'
 import { themeColors } from '../../theme/colors'
 
 const { Text, Title, Link } = Typography
@@ -189,142 +189,6 @@ function CategorySettings() {
   )
 }
 
-// 敏感词设置组件
-function SensitiveWordSettings() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [searchText, setSearchText] = useState('')
-  const [words, setWords] = useState([
-    { id: '1', word: '敏感词敏感词', createdAt: '2025-07-10 16:38:08' }
-  ])
-
-  const filteredWords = words.filter(item => item.word.includes(searchText))
-
-  const columns = [
-    {
-      title: '敏感词',
-      dataIndex: 'word',
-      key: 'word',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-    },
-    {
-      title: '操作',
-      key: 'actions',
-      width: 150,
-      render: (_: any, record: any) => (
-        <Space size={16}>
-          <Link>编辑</Link>
-          <Popconfirm
-            title="确定删除该敏感词吗？"
-            onConfirm={() => {
-              setWords(prev => prev.filter(item => item.id !== record.id))
-              message.success('已删除')
-            }}
-            okText="确定"
-            cancelText="取消"
-          >
-            <Link danger>删除</Link>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <Alert
-        message="系统已接入微信内容安全接口，对文本中可能包含的色情、暴恐、时政违规等有害信息进行识别，降低内容违规风险。除此之外，你也可以自行添加业务敏感词（如竞品词等），添加后用户发布帖子和发表评论中若包含指定的关键词则不会发布成功，最多只可添加 500 个关键词。"
-        type="info"
-        showIcon
-        icon={<InfoCircleFilled style={{ color: themeColors.primary, fontSize: 16 }} />}
-        style={{
-          background: '#eff6ff',
-          border: '1px solid #dbeafe',
-          borderRadius: 8,
-          padding: '12px 16px'
-        }}
-      />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space>
-          <Input
-            placeholder="请输入敏感词"
-            prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
-            style={{ width: 240, height: 36, borderRadius: 4 }}
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-          />
-          <Button
-            style={{ height: 36, borderRadius: 4, paddingInline: 20, color: themeColors.primary, borderColor: themeColors.primary }}
-            onClick={() => { }}
-          >
-            查 询
-          </Button>
-        </Space>
-        <Button
-          type="primary"
-          onClick={() => setIsModalOpen(true)}
-          style={{
-            height: 36,
-            background: themeColors.primary,
-            borderRadius: 6,
-            fontWeight: 500
-          }}
-        >
-          添加敏感词
-        </Button>
-      </div>
-
-      <div className="table-card">
-        <Table
-          columns={columns}
-          dataSource={filteredWords}
-          rowKey="id"
-          pagination={false}
-          size="middle"
-          bordered={false}
-        />
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-        <Pagination
-          total={filteredWords.length}
-          showTotal={total => `共${total}条`}
-          pageSize={10}
-          size="small"
-        />
-      </div>
-
-      <Modal
-        title="添加敏感词"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        okText="确定"
-        cancelText="取消"
-        centered
-        width={480}
-        bodyStyle={{ paddingTop: 20, paddingBottom: 24 }}
-      >
-        <div style={{ marginBottom: 12, color: '#1e293b', fontSize: 14 }}>
-          当前已添加 <span style={{ fontWeight: 600 }}>{words.length}</span> 个
-        </div>
-        <Input.TextArea
-          placeholder="请输入敏感词，多个换行分隔"
-          rows={6}
-          style={{
-            borderRadius: 4,
-            border: '1px solid #2474FF',
-            padding: 12
-          }}
-        />
-      </Modal>
-    </div>
-  )
-}
-
 export default function SettingsPage() {
   const [activeMenu, setActiveMenu] = useState('基础设置')
   const [publishBtnStyle, setPublishBtnStyle] = useState('custom')
@@ -347,7 +211,6 @@ export default function SettingsPage() {
 
   const menuItems = [
     '基础设置',
-    '敏感词设置',
     '类目设置'
   ]
 
@@ -413,34 +276,7 @@ export default function SettingsPage() {
                 <Text strong>：</Text>
               </Space>
             }>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {/* 发布帖子奖励 */}
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: 4 }}>
-                  <Checkbox defaultChecked>
-                    <Space>
-                      发布帖子 <QuestionCircleOutlined style={{ color: '#94a3b8', fontSize: 13 }} />
-                    </Space>
-                  </Checkbox>
-                  <div style={{ marginTop: 12, paddingLeft: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Text>可以获得</Text>
-                    <InputNumber defaultValue={5} style={{ width: 80 }} />
-                    <Text>创作值</Text>
-                    <Select
-                      defaultValue="daily"
-                      style={{ width: 100 }}
-                      options={[
-                        { label: '活动中', value: 'campaign' },
-                        { label: '每日', value: 'daily' },
-                        { label: '每周', value: 'weekly' },
-                        { label: '每月', value: 'monthly' },
-                      ]}
-                    />
-                    <Text>最多可以获得</Text>
-                    <InputNumber defaultValue={29} style={{ width: 80 }} />
-                    <Text>次</Text>
-                  </div>
-                </div>
-
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {/* 帖子被加精奖励 */}
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: 4 }}>
                   <Checkbox defaultChecked>
@@ -582,8 +418,8 @@ export default function SettingsPage() {
               </div>
             </Form.Item>
 
-            {/* 精华标签 */}
-            <Form.Item label={<Text strong>精华标签：</Text>}>
+            {/* 优秀标签 */}
+            <Form.Item label={<Text strong>优秀标签：</Text>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <Radio.Group value={featuredTagStyle} onChange={e => setFeaturedTagStyle(e.target.value)}>
                   <Radio value="default">默认样式</Radio>
@@ -604,7 +440,7 @@ export default function SettingsPage() {
                         position: 'relative',
                         marginBottom: 12
                       }}>
-                        <img src={featuredTagImage} style={{ height: 40, objectFit: 'contain' }} alt="精华标签" />
+                        <img src={featuredTagImage} style={{ height: 40, objectFit: 'contain' }} alt="优秀标签" />
                         <CloseCircleFilled
                           style={{ position: 'absolute', top: -8, right: -8, color: '#94a3b8', fontSize: 20, cursor: 'pointer', background: '#fff', borderRadius: '50%' }}
                           onClick={() => setFeaturedTagImage(null)}
@@ -650,10 +486,9 @@ export default function SettingsPage() {
           </Form>
         )}
 
-        {activeMenu === '敏感词设置' && <SensitiveWordSettings />}
         {activeMenu === '类目设置' && <CategorySettings />}
 
-        {activeMenu !== '基础设置' && activeMenu !== '类目设置' && activeMenu !== '敏感词设置' && (
+        {activeMenu !== '基础设置' && activeMenu !== '类目设置' && (
           <div style={{ padding: '40px 0', textAlign: 'center', color: '#94a3b8' }}>
             该模块正在开发中...
           </div>
