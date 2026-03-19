@@ -15,7 +15,6 @@ export const badgeRows: BadgeRow[] = [
     badgeName: '创作大师',
     iconUrl: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=200&h=200&fit=crop',
     description: '授予在社区发表超过50篇优质作品的创作者',
-    remark: '系统自动核算发放',
     owners: 86,
     status: '启用',
     updatedAt: '2026-03-02 09:30',

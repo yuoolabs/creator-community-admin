@@ -191,19 +191,16 @@ function CategorySettings() {
 
 export default function SettingsPage() {
   const [activeMenu, setActiveMenu] = useState('基础设置')
-  const [publishBtnStyle, setPublishBtnStyle] = useState('custom')
   const [featuredTagStyle, setFeaturedTagStyle] = useState('custom')
 
   // 图片上传状态
-  const [publishBtnImage, setPublishBtnImage] = useState<string | null>(null)
   const [featuredTagImage, setFeaturedTagImage] = useState<string | null>(null)
 
   // 处理图片模拟上传
-  const handleUpload = (type: 'publish' | 'tag', file: any) => {
+  const handleUpload = (file: any) => {
     const reader = new FileReader()
     reader.onload = (e) => {
-      if (type === 'publish') setPublishBtnImage(e.target?.result as string)
-      else setFeaturedTagImage(e.target?.result as string)
+      setFeaturedTagImage(e.target?.result as string)
     }
     reader.readAsDataURL(file)
     return false // 阻止自动上传
@@ -360,64 +357,6 @@ export default function SettingsPage() {
               </div>
             </Form.Item>
 
-            {/* 发布按钮 */}
-            <Form.Item label={<Text strong>发布按钮：</Text>}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <Radio.Group value={publishBtnStyle} onChange={e => setPublishBtnStyle(e.target.value)}>
-                  <Radio value="default">默认样式</Radio>
-                  <Radio value="custom">自定义</Radio>
-                </Radio.Group>
-                {publishBtnStyle === 'custom' && (
-                  <div style={{ background: '#f8fafc', padding: '24px', borderRadius: 8, maxWidth: 600 }}>
-                    {publishBtnImage ? (
-                      <div style={{
-                        width: 120,
-                        height: 120,
-                        background: '#fff',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        marginBottom: 12
-                      }}>
-                        <img src={publishBtnImage} style={{ width: 80, height: 80, objectFit: 'contain' }} alt="发布按钮" />
-                        <CloseCircleFilled
-                          style={{ position: 'absolute', top: -8, right: -8, color: '#94a3b8', fontSize: 20, cursor: 'pointer', background: '#fff', borderRadius: '50%' }}
-                          onClick={() => setPublishBtnImage(null)}
-                        />
-                      </div>
-                    ) : (
-                      <Upload
-                        showUploadList={false}
-                        beforeUpload={(file) => handleUpload('publish', file)}
-                        accept="image/*"
-                      >
-                        <div style={{
-                          width: 120,
-                          height: 120,
-                          background: '#fff',
-                          border: '1px dashed #cbd5e1',
-                          borderRadius: 4,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          marginBottom: 12
-                        }}>
-                          <PlusOutlined style={{ fontSize: 24, color: '#94a3b8', marginBottom: 8 }} />
-                          <Text type="secondary" style={{ fontSize: 12 }}>上传图片</Text>
-                        </div>
-                      </Upload>
-                    )}
-                    <Text type="secondary" style={{ fontSize: 13 }}>建议宽度120px，高度不限，大小不超过 1 MB</Text>
-                  </div>
-                )}
-              </div>
-            </Form.Item>
-
             {/* 优秀标签 */}
             <Form.Item label={<Text strong>优秀标签：</Text>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -449,7 +388,7 @@ export default function SettingsPage() {
                     ) : (
                       <Upload
                         showUploadList={false}
-                        beforeUpload={(file) => handleUpload('tag', file)}
+                        beforeUpload={handleUpload}
                         accept="image/*"
                       >
                         <div style={{
