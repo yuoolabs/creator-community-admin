@@ -1,5 +1,5 @@
-import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message, Radio, Upload } from 'antd'
-import { QuestionCircleOutlined, HolderOutlined, CloseCircleFilled, PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message } from 'antd'
+import { QuestionCircleOutlined, HolderOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { themeColors } from '../../theme/colors'
 
@@ -191,20 +191,6 @@ function CategorySettings() {
 
 export default function SettingsPage() {
   const [activeMenu, setActiveMenu] = useState('基础设置')
-  const [featuredTagStyle, setFeaturedTagStyle] = useState('custom')
-
-  // 图片上传状态
-  const [featuredTagImage, setFeaturedTagImage] = useState<string | null>(null)
-
-  // 处理图片模拟上传
-  const handleUpload = (file: any) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      setFeaturedTagImage(e.target?.result as string)
-    }
-    reader.readAsDataURL(file)
-    return false // 阻止自动上传
-  }
 
   const menuItems = [
     '基础设置',
@@ -273,34 +259,7 @@ export default function SettingsPage() {
                 <Text strong>：</Text>
               </Space>
             }>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {/* 帖子被加精奖励 */}
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: 4 }}>
-                  <Checkbox defaultChecked>
-                    <Space>
-                      帖子被加精 <QuestionCircleOutlined style={{ color: '#94a3b8', fontSize: 13 }} />
-                    </Space>
-                  </Checkbox>
-                  <div style={{ marginTop: 12, paddingLeft: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Text>可以获得</Text>
-                    <InputNumber defaultValue={10} style={{ width: 80 }} />
-                    <Text>创作值</Text>
-                    <Select
-                      defaultValue="daily"
-                      style={{ width: 100 }}
-                      options={[
-                        { label: '活动中', value: 'campaign' },
-                        { label: '每日', value: 'daily' },
-                        { label: '每周', value: 'weekly' },
-                        { label: '每月', value: 'monthly' },
-                      ]}
-                    />
-                    <Text>最多可以获得</Text>
-                    <InputNumber defaultValue={19} style={{ width: 80 }} />
-                    <Text>次</Text>
-                  </div>
-                </div>
-
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {/* 发布作品奖励 */}
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: 4 }}>
                   <Checkbox defaultChecked>
@@ -354,64 +313,6 @@ export default function SettingsPage() {
                     <Text>次</Text>
                   </div>
                 </div>
-              </div>
-            </Form.Item>
-
-            {/* 优秀标签 */}
-            <Form.Item label={<Text strong>优秀标签：</Text>}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <Radio.Group value={featuredTagStyle} onChange={e => setFeaturedTagStyle(e.target.value)}>
-                  <Radio value="default">默认样式</Radio>
-                  <Radio value="custom">自定义</Radio>
-                </Radio.Group>
-                {featuredTagStyle === 'custom' && (
-                  <div style={{ background: '#f8fafc', padding: '24px', borderRadius: 8, maxWidth: 600 }}>
-                    {featuredTagImage ? (
-                      <div style={{
-                        width: 120,
-                        height: 100,
-                        background: '#fff',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: 4,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        marginBottom: 12
-                      }}>
-                        <img src={featuredTagImage} style={{ height: 40, objectFit: 'contain' }} alt="优秀标签" />
-                        <CloseCircleFilled
-                          style={{ position: 'absolute', top: -8, right: -8, color: '#94a3b8', fontSize: 20, cursor: 'pointer', background: '#fff', borderRadius: '50%' }}
-                          onClick={() => setFeaturedTagImage(null)}
-                        />
-                      </div>
-                    ) : (
-                      <Upload
-                        showUploadList={false}
-                        beforeUpload={handleUpload}
-                        accept="image/*"
-                      >
-                        <div style={{
-                          width: 120,
-                          height: 100,
-                          background: '#fff',
-                          border: '1px dashed #cbd5e1',
-                          borderRadius: 4,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          marginBottom: 12
-                        }}>
-                          <PlusOutlined style={{ fontSize: 24, color: '#94a3b8', marginBottom: 8 }} />
-                          <Text type="secondary" style={{ fontSize: 12 }}>上传图片</Text>
-                        </div>
-                      </Upload>
-                    )}
-                    <Text type="secondary" style={{ fontSize: 13 }}>建议尺寸 100*40 以内，大小不超过 1 MB</Text>
-                  </div>
-                )}
               </div>
             </Form.Item>
 
