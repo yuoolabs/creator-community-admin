@@ -318,7 +318,6 @@ export default function WorkReviewPage() {
               <Dropdown
                 menu={{
                   items: [
-                    { key: '1', label: '加入小黑屋' },
                     { key: '2', label: '删除作品' },
                     { key: '3', label: '设置作品类目' },
                     { key: '4', label: '隐藏作品' },
