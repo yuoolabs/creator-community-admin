@@ -8,7 +8,8 @@ import {
   LeftOutlined,
   EditOutlined,
 } from '@ant-design/icons'
-import { Avatar, Button, Card, Col, Empty, Pagination, Row, Space, Tag, Typography, Modal, Checkbox, message, InputNumber } from 'antd'
+import { Avatar, Button, Card, Col, Empty, Pagination, Row, Space, Table, Tabs, Tag, Typography, Modal, Checkbox, message, InputNumber } from 'antd'
+import type { ColumnsType } from 'antd/es/table'
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import PlatformBadge from '../../components/common/PlatformBadge'
@@ -32,11 +33,19 @@ type WorkItem = {
   warnText?: string
 }
 
+type ActivityParticipationItem = {
+  key: string
+  activityName: string
+  activityId: string
+  publishTime: string
+  workId: string
+}
+
 const workCoverRows = postRows.slice(0, 6)
 
 const works: WorkItem[] = [
   {
-    id: 'w1',
+    id: '482731',
     title: '如何使用新款咖啡机制作拉花？新手必看教程 #生活美学',
     platform: '小红书',
     date: '2023-10-24',
@@ -47,7 +56,7 @@ const works: WorkItem[] = [
     actionText: '查看',
   },
   {
-    id: 'w2',
+    id: '915204',
     title: '秋季穿搭分享 Vol.03 | 职场人的温柔力量',
     platform: '抖音',
     date: '2023-10-22',
@@ -58,7 +67,7 @@ const works: WorkItem[] = [
     actionText: '详情',
   },
   {
-    id: 'w3',
+    id: '206487',
     title: '如何使用新款咖啡机制作拉花？新手必看教程 #生活美学',
     platform: '小红书',
     date: '2023-10-24',
@@ -69,7 +78,7 @@ const works: WorkItem[] = [
     actionText: '查看',
   },
   {
-    id: 'w4',
+    id: '734512',
     title: '探店日记：藏在弄堂里的法式浪漫 bistro',
     platform: '小红书',
     date: '2023-10-15',
@@ -80,7 +89,7 @@ const works: WorkItem[] = [
     actionText: '查看',
   },
   {
-    id: 'w5',
+    id: '641908',
     title: '【VLOG】周末去哪儿？大学生特种兵一日游',
     platform: '小红书',
     date: '2023-10-01',
@@ -92,7 +101,7 @@ const works: WorkItem[] = [
     warnText: '内容包含违禁词',
   },
   {
-    id: 'w6',
+    id: '558320',
     title: '如何使用新款咖啡机制作拉花？新手必看教程 #生活美学',
     platform: '小红书',
     date: '2023-10-24',
@@ -103,6 +112,14 @@ const works: WorkItem[] = [
     actionText: '查看',
   },
 ]
+
+const activityParticipationRows: ActivityParticipationItem[] = works.map((work, index) => ({
+  key: `${work.id}-${index}`,
+  activityName: postRows[index]?.activityName ?? `活动 ${index + 1}`,
+  activityId: String(480000 + index * 137),
+  publishTime: work.date,
+  workId: work.id,
+}))
 
 const availableBadges = [
   { id: 'b1', label: '百大创作者', icon: <TrophyFilled />, color: 'gold' },
@@ -165,6 +182,32 @@ export default function CreatorDetailPage() {
     () => availableBadges.filter(b => selectedBadgeIds.includes(b.id)),
     [selectedBadgeIds]
   )
+
+  const activityColumns: ColumnsType<ActivityParticipationItem> = [
+    {
+      title: '活动名称',
+      dataIndex: 'activityName',
+      key: 'activityName',
+    },
+    {
+      title: '活动 ID',
+      dataIndex: 'activityId',
+      key: 'activityId',
+      width: 140,
+    },
+    {
+      title: '作品发布时间',
+      dataIndex: 'publishTime',
+      key: 'publishTime',
+      width: 180,
+    },
+    {
+      title: '作品 ID',
+      dataIndex: 'workId',
+      key: 'workId',
+      width: 120,
+    },
+  ]
 
   const handleUpdateBadges = () => {
     setIsBadgeModalOpen(false)
@@ -345,65 +388,93 @@ export default function CreatorDetailPage() {
 
       </Modal>
 
-      <Card className="creator-works-wrap" title="作品详情" bordered={false} style={{ marginTop: 16 }}>
-
-        <div className="creator-stats-list">
-          <div className="creator-stat-item">
-            <span className="creator-stat-label">累计发布作品数：</span>
-            <span className="creator-stat-value">232</span>
-          </div>
-          <div className="creator-stat-item">
-            <span className="creator-stat-label">优秀作品数：</span>
-            <span className="creator-stat-value">123</span>
-          </div>
-          <div className="creator-stat-item">
-            <span className="creator-stat-label">累计获赞数：</span>
-            <span className="creator-stat-value">23423</span>
-          </div>
-        </div>
-
-        <div className="creator-works-divider" />
-
-        <Row gutter={[16, 16]}>
-          {works.map((work) => {
-            const status = statusMeta(work.status)
-            return (
-              <Col key={work.id} xs={24} md={12} xl={8}>
-                <div className="work-card">
-                  <div className="work-cover-wrap">
-                    <img src={work.cover} alt={work.title} className="work-cover" />
-                    <span className={`work-status ${status.className}`}>{status.text}</span>
-                  </div>
-                  <div className="work-body">
-                    <div className="work-meta">
-                      <PlatformBadge platform={work.platform} compact />
-                      <Text type="secondary">{work.date}</Text>
+      <Card className="creator-works-wrap" bordered={false} style={{ marginTop: 16 }}>
+        <Tabs
+          defaultActiveKey="works"
+          items={[
+            {
+              key: 'works',
+              label: '作品详情',
+              children: (
+                <>
+                  <div className="creator-stats-list">
+                    <div className="creator-stat-item">
+                      <span className="creator-stat-label">累计发布作品数：</span>
+                      <span className="creator-stat-value">232</span>
                     </div>
-                    <div className="work-title">{work.title}</div>
-                    <div className="work-footer">
-                      <div>
-                        <Text type="secondary">
-                          <EyeOutlined /> {work.views}
-                        </Text>
-                        <Text type="secondary" style={{ marginLeft: 12 }}>
-                          <HeartOutlined /> {work.likes}
-                        </Text>
-                      </div>
-                      <a>{work.actionText}</a>
+                    <div className="creator-stat-item">
+                      <span className="creator-stat-label">优秀作品数：</span>
+                      <span className="creator-stat-value">123</span>
                     </div>
-                    {work.warnText && work.status !== 'rejected' ? (
-                      <div className="work-warn">△ {work.warnText}</div>
-                    ) : null}
+                    <div className="creator-stat-item">
+                      <span className="creator-stat-label">累计获赞数：</span>
+                      <span className="creator-stat-value">23423</span>
+                    </div>
                   </div>
+
+                  <div className="creator-works-divider" />
+
+                  <Row gutter={[16, 16]}>
+                    {works.map((work) => {
+                      const status = statusMeta(work.status)
+                      return (
+                        <Col key={work.id} xs={24} md={12} xl={8}>
+                          <div className="work-card">
+                            <div className="work-cover-wrap">
+                              <img src={work.cover} alt={work.title} className="work-cover" />
+                              <span className={`work-status ${status.className}`}>{status.text}</span>
+                            </div>
+                            <div className="work-body">
+                              <div className="work-meta">
+                                <PlatformBadge platform={work.platform} compact />
+                                <Text type="secondary">{work.date}</Text>
+                              </div>
+                              <div className="work-title">{work.title}</div>
+                              <div className="work-footer">
+                                <div>
+                                  <Text type="secondary">
+                                    <EyeOutlined /> {work.views}
+                                  </Text>
+                                  <Text type="secondary" style={{ marginLeft: 12 }}>
+                                    <HeartOutlined /> {work.likes}
+                                  </Text>
+                                </div>
+                                <a>{work.actionText}</a>
+                              </div>
+                              {work.warnText && work.status !== 'rejected' ? (
+                                <div className="work-warn">△ {work.warnText}</div>
+                              ) : null}
+                            </div>
+                          </div>
+                        </Col>
+                      )
+                    })}
+                  </Row>
+
+                  <div className="creator-detail-pagination">
+                    <Pagination current={1} total={30} pageSize={6} showSizeChanger={false} />
+                  </div>
+                </>
+              ),
+            },
+            {
+              key: 'activities',
+              label: '参与活动',
+              children: (
+                <div className="table-card">
+                  <Table<ActivityParticipationItem>
+                    rowKey="key"
+                    columns={activityColumns}
+                    dataSource={activityParticipationRows}
+                    pagination={false}
+                    size="middle"
+                    className="creator-activity-table"
+                  />
                 </div>
-              </Col>
-            )
-          })}
-        </Row>
-
-        <div className="creator-detail-pagination">
-          <Pagination current={1} total={30} pageSize={6} showSizeChanger={false} />
-        </div>
+              ),
+            },
+          ]}
+        />
       </Card>
 
     </div>

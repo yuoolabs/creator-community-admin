@@ -4,8 +4,9 @@ import {
   TrophyFilled,
   UpCircleFilled,
 } from '@ant-design/icons'
-import { Avatar, Button, InputNumber, Modal, Select, Space, Table, Tag, Typography, message } from 'antd'
+import { Avatar, Button, DatePicker, InputNumber, Modal, Select, Space, Table, Tag, Typography, message } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import dayjs, { type Dayjs } from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type {
@@ -67,7 +68,16 @@ export default function CreatorManagementPage() {
   const [phoneKeyword, setPhoneKeyword] = useState('')
   const [phoneType, setPhoneType] = useState('phone')
   const [level, setLevel] = useState<'all' | CreatorLevel>('all')
-  const [searchState, setSearchState] = useState({ phoneKeyword: '', level: 'all' as 'all' | CreatorLevel })
+  const [platform, setPlatform] = useState<'all' | '抖音' | '哔哩哔哩' | '小红书'>('all')
+  const [certificationRange, setCertificationRange] = useState<[Dayjs | null, Dayjs | null] | null>(null)
+  const [valueRange, setValueRange] = useState<{ min?: number; max?: number }>({})
+  const [searchState, setSearchState] = useState({
+    phoneKeyword: '',
+    level: 'all' as 'all' | CreatorLevel,
+    platform: 'all' as 'all' | '抖音' | '哔哩哔哩' | '小红书',
+    certificationRange: null as [Dayjs | null, Dayjs | null] | null,
+    valueRange: {} as { min?: number; max?: number },
+  })
   const [page, setPage] = useState(1)
 
   const [isEditValueModalOpen, setIsEditValueModalOpen] = useState(false)
@@ -84,8 +94,26 @@ export default function CreatorManagementPage() {
     return creatorManagementRows.filter((row) => {
       const phoneMatched = !searchState.phoneKeyword || row.phone.includes(searchState.phoneKeyword)
       const levelMatched = searchState.level === 'all' || row.level === searchState.level
+      const platformMatched =
+        searchState.platform === 'all' || row.verifiedPlatforms.includes(searchState.platform)
+      const certificationMatched =
+        !searchState.certificationRange ||
+        (!searchState.certificationRange[0] && !searchState.certificationRange[1]) ||
+        (() => {
+          const certificationDate = dayjs(row.certificationTime)
+          const [start, end] = searchState.certificationRange
 
-      return phoneMatched && levelMatched
+          if (start && certificationDate.isBefore(start, 'day')) return false
+          if (end && certificationDate.isAfter(end, 'day')) return false
+
+          return true
+        })()
+      const minValueMatched =
+        searchState.valueRange.min === undefined || row.totalValue >= searchState.valueRange.min
+      const maxValueMatched =
+        searchState.valueRange.max === undefined || row.totalValue <= searchState.valueRange.max
+
+      return phoneMatched && levelMatched && platformMatched && certificationMatched && minValueMatched && maxValueMatched
     })
   }, [searchState])
 
@@ -205,14 +233,23 @@ export default function CreatorManagementPage() {
   ]
 
   const handleSearch = () => {
-    setSearchState({ phoneKeyword, level })
+    setSearchState({ phoneKeyword, level, platform, certificationRange, valueRange })
     setPage(1)
   }
 
   const handleReset = () => {
     setPhoneKeyword('')
     setLevel('all')
-    setSearchState({ phoneKeyword: '', level: 'all' })
+    setPlatform('all')
+    setCertificationRange(null)
+    setValueRange({})
+    setSearchState({
+      phoneKeyword: '',
+      level: 'all',
+      platform: 'all',
+      certificationRange: null,
+      valueRange: {},
+    })
     setPage(1)
   }
 
@@ -244,8 +281,8 @@ export default function CreatorManagementPage() {
             />
           </div>
 
-          <div>
-            <Select
+	          <div>
+	            <Select
               className="filter-select"
               value={level}
               onChange={(value) => setLevel(value)}
@@ -257,16 +294,61 @@ export default function CreatorManagementPage() {
                 { label: 'L3 专业', value: 'L3 专业' },
                 { label: 'L4 明星', value: 'L4 明星' },
                 { label: 'L5 传说', value: 'L5 传说' },
-              ]}
-            />
-          </div>
+	              ]}
+	            />
+	          </div>
 
-          <div className="creator-filter-actions">
-            <Button size="large" onClick={handleReset}>
+	          <div>
+	            <Select
+	              className="filter-select"
+	              value={platform}
+	              onChange={(value) => setPlatform(value)}
+	              style={{ width: '100%' }}
+	              options={[
+	                { label: '所属平台', value: 'all' },
+	                { label: '抖音', value: '抖音' },
+	                { label: '哔哩哔哩', value: '哔哩哔哩' },
+	                { label: '小红书', value: '小红书' },
+	              ]}
+	            />
+	          </div>
+
+	          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+	            <span style={{ color: '#475569', fontSize: 13, whiteSpace: 'nowrap' }}>认证时间 :</span>
+	            <DatePicker.RangePicker
+	              value={certificationRange}
+	              onChange={(value) => setCertificationRange(value as [Dayjs | null, Dayjs | null] | null)}
+	              style={{ width: '100%' }}
+	              placeholder={['认证开始时间', '认证结束时间']}
+	            />
+	          </div>
+
+	          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+	            <span style={{ color: '#475569', fontSize: 13, whiteSpace: 'nowrap' }}>创作值范围 :</span>
+	            <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+	              <InputNumber
+	                style={{ width: '100%' }}
+	                value={valueRange.min}
+	                onChange={(value) => setValueRange((prev) => ({ ...prev, min: value ?? undefined }))}
+	                placeholder="最低创作值"
+	                min={0}
+	              />
+	              <InputNumber
+	                style={{ width: '100%' }}
+	                value={valueRange.max}
+	                onChange={(value) => setValueRange((prev) => ({ ...prev, max: value ?? undefined }))}
+	                placeholder="最高创作值"
+	                min={0}
+	              />
+	            </div>
+	          </div>
+
+	          <div className="creator-filter-actions">
+	            <Button size="large" onClick={handleReset}>
               重置
             </Button>
             <Button type="primary" size="large" onClick={handleSearch}>
-              搜索
+              查询
             </Button>
           </div>
         </div>

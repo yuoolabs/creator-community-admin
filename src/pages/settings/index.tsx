@@ -2,6 +2,7 @@ import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber,
 import { QuestionCircleOutlined, HolderOutlined, CloseCircleFilled, PlusOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { themeColors } from '../../theme/colors'
+import { loadXxxxCategories, saveXxxxCategories, type XxxxCategoryItem } from '../../mocks/xxxxCategories'
 
 const { Text, Title, Link } = Typography
 
@@ -13,7 +14,7 @@ function CategorySettings() {
 
   const [categories, setCategories] = useState([
     { id: '1', name: '最新', count: null, status: false, createdAt: null, isSystem: true, isMovable: false },
-    { id: '2', name: '精选', count: null, status: false, createdAt: null, isSystem: true, isMovable: false },
+    { id: '2', name: '优秀', count: null, status: false, createdAt: null, isSystem: true, isMovable: false },
     { id: '3', name: '美妆分类', count: 8, status: true, createdAt: '2025-05-13 14:54:40', isSystem: false, isMovable: true },
     { id: '4', name: '户外运动', count: 7, status: true, createdAt: '2025-05-13 14:55:39', isSystem: false, isMovable: true },
     { id: '5', name: '美食Share', count: 4, status: true, createdAt: '2025-05-13 15:17:29', isSystem: false, isMovable: true },
@@ -70,7 +71,7 @@ function CategorySettings() {
 
   const columns = [
     {
-      title: '类目名称',
+      title: '属性名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => (
@@ -81,7 +82,7 @@ function CategorySettings() {
       ),
     },
     {
-      title: '关联帖子数',
+      title: '关联作品数',
       dataIndex: 'count',
       key: 'count',
       render: (text: any) => (text === null ? '-' : text),
@@ -115,14 +116,14 @@ function CategorySettings() {
           <Space size={16}>
             <Link onClick={() => handleEdit(record)}>编辑</Link>
             <Popconfirm
-              title="确定删除该类目吗？"
+              title="确定删除该属性吗？"
               description="删除后关联的作品将失去归属。"
               onConfirm={() => handleDelete(record.id)}
               okText="确定"
               cancelText="取消"
               placement="topRight"
             >
-              <Link danger>删除</Link>
+              <Link style={{ color: '#ef4444' }}>删除</Link>
             </Popconfirm>
           </Space>
         )
@@ -144,7 +145,7 @@ function CategorySettings() {
             fontWeight: 500
           }}
         >
-          添加类目 ({categories.length}/20)
+          添加属性 ({categories.length}/20)
         </Button>
       </div>
       <div className="table-card">
@@ -159,7 +160,7 @@ function CategorySettings() {
       </div>
 
       <Modal
-        title={editingItem ? "编辑类目" : "添加类目"}
+        title={editingItem ? "编辑属性" : "添加属性"}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleModalOk}
@@ -172,12 +173,193 @@ function CategorySettings() {
         <Form form={form} layout="horizontal" colon={false}>
           <Form.Item
             name="name"
-            label={<span style={{ color: '#1e293b', fontWeight: 500 }}>类目名称：</span>}
-            rules={[{ required: true, message: '请输入类目名称' }]}
+            label={<span style={{ color: '#1e293b', fontWeight: 500 }}>属性名称：</span>}
+            rules={[{ required: true, message: '请输入属性名称' }]}
             style={{ marginBottom: 0 }}
           >
             <Input
-              placeholder="请输入类目名称"
+              placeholder="请输入属性名称"
+              maxLength={8}
+              showCount
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  )
+}
+
+// XX设置组件
+function XxCategorySettings() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [form] = Form.useForm()
+
+  const [categories, setCategories] = useState<XxxxCategoryItem[]>(() => loadXxxxCategories())
+
+  const updateCategories = (updater: (prev: XxxxCategoryItem[]) => XxxxCategoryItem[]) => {
+    setCategories((prev) => {
+      const next = updater(prev)
+      saveXxxxCategories(next)
+      return next
+    })
+  }
+
+  const handleToggleStatus = (id: string, checked: boolean) => {
+    updateCategories(prev => prev.map(item =>
+      item.id === id ? { ...item, status: checked } : item
+    ))
+    message.success(`${checked ? '已开启' : '已隐藏'}显示状态`)
+  }
+
+  const handleDelete = (id: string) => {
+    updateCategories(prev => prev.filter(item => item.id !== id))
+    message.success('类目已删除')
+  }
+
+  const handleAdd = () => {
+    setEditingItem(null)
+    form.resetFields()
+    setIsModalOpen(true)
+  }
+
+  const handleEdit = (record: any) => {
+    setEditingItem(record)
+    form.setFieldsValue({ name: record.name })
+    setIsModalOpen(true)
+  }
+
+  const handleModalOk = () => {
+    form.validateFields().then(values => {
+      if (editingItem) {
+        updateCategories(prev => prev.map(item =>
+          item.id === editingItem.id ? { ...item, name: values.name } : item
+        ))
+        message.success('类目已更新')
+      } else {
+        const newId = String(Date.now())
+        updateCategories(prev => [...prev, {
+          id: newId,
+          name: values.name,
+          count: 0,
+          status: true,
+          createdAt: new Date().toISOString().replace('T', ' ').split('.')[0],
+          isMovable: true
+        }])
+        message.success('类目已添加')
+      }
+      setIsModalOpen(false)
+    })
+  }
+
+  const columns = [
+    {
+      title: '品类名称',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string, record: any) => (
+        <Space>
+          {record.isMovable && <HolderOutlined style={{ color: '#94a3b8', cursor: 'grab' }} />}
+          <span style={{ color: '#1e293b', fontWeight: 500 }}>{text}</span>
+        </Space>
+      ),
+    },
+    {
+      title: '关联作品数',
+      dataIndex: 'count',
+      key: 'count',
+      render: (text: any) => (text === null ? '-' : text),
+    },
+    {
+      title: '显示状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: boolean, record: any) => (
+        <Switch
+          checked={status}
+          onChange={(checked) => handleToggleStatus(record.id, checked)}
+          checkedChildren="显示"
+          unCheckedChildren="隐藏"
+          size="small"
+        />
+      ),
+    },
+    {
+      title: '添加时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (text: any) => (text === null ? '-' : text),
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      render: (_: any, record: any) => (
+        <Space size={16}>
+          <Link onClick={() => handleEdit(record)}>编辑</Link>
+          <Popconfirm
+            title="确定删除该IP/品类吗？"
+            description="删除后关联的作品将失去归属。"
+            onConfirm={() => handleDelete(record.id)}
+            okText="确定"
+            cancelText="取消"
+            placement="topRight"
+          >
+            <Link style={{ color: '#ef4444' }}>删除</Link>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <div style={{ padding: '0 0 24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
+        <Button
+          type="primary"
+          onClick={handleAdd}
+          style={{
+            background: themeColors.primary,
+            borderRadius: 6,
+            height: 36,
+            fontSize: 14,
+            fontWeight: 500
+          }}
+        >
+          添加品类 ({categories.length}/20)
+        </Button>
+      </div>
+      <div className="table-card">
+        <Table
+          columns={columns}
+          dataSource={categories}
+          rowKey="id"
+          pagination={false}
+          size="middle"
+          bordered={false}
+        />
+      </div>
+
+      <Modal
+        title={editingItem ? "编辑品类" : "添加品类"}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        onOk={handleModalOk}
+        okText="确定"
+        cancelText="取消"
+        centered
+        width={480}
+        bodyStyle={{ paddingTop: 32, paddingBottom: 64 }}
+      >
+        <Form form={form} layout="horizontal" colon={false}>
+          <Form.Item
+            name="name"
+            label={<span style={{ color: '#1e293b', fontWeight: 500 }}>品类名称：</span>}
+            rules={[{ required: true, message: '请输入品类名称' }]}
+            style={{ marginBottom: 0 }}
+          >
+            <Input
+              placeholder="请输入品类名称"
               maxLength={8}
               showCount
               style={{ width: '100%' }}
@@ -208,7 +390,8 @@ export default function SettingsPage() {
 
   const menuItems = [
     '基础设置',
-    '类目设置'
+    'IP/品类',
+    '作品属性'
   ]
 
   return (
@@ -245,7 +428,7 @@ export default function SettingsPage() {
       <div style={{ flex: 1, padding: '24px 40px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: activeMenu === '基础设置' ? 24 : 12 }}>
           <Title level={5} style={{ margin: 0 }}>{activeMenu}</Title>
-          {activeMenu === '基础设置' && <Button size="small">推广</Button>}
+          {activeMenu === '基础设置' && <Button size="small">推广创作者首页</Button>}
         </div>
 
         {activeMenu === '基础设置' && (
@@ -398,9 +581,10 @@ export default function SettingsPage() {
           </Form>
         )}
 
-        {activeMenu === '类目设置' && <CategorySettings />}
+        {activeMenu === '作品属性' && <CategorySettings />}
+        {activeMenu === 'IP/品类' && <XxCategorySettings />}
 
-        {activeMenu !== '基础设置' && activeMenu !== '类目设置' && (
+        {activeMenu !== '基础设置' && activeMenu !== '作品属性' && activeMenu !== 'IP/品类' && (
           <div style={{ padding: '40px 0', textAlign: 'center', color: '#94a3b8' }}>
             该模块正在开发中...
           </div>

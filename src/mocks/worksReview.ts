@@ -13,9 +13,14 @@ export type PostRow = {
   activityName?: string
   platform?: string
   platformUrl?: string
+  isFeatured?: boolean
+  ipCategory?: string
+  workAttribute?: string
 }
 
 const platformNames = ['抖音', '小红书', '哔哩哔哩']
+const ipCategoryNames = ['美妆分类', '户外运动', '美食Share', 'PLAZA']
+const workAttributeNames = ['美妆分类', '户外运动', '美食Share', 'PLAZA']
 
 const activityNames = [
   '春季穿搭灵感征集',
@@ -104,7 +109,10 @@ function generateRows(count: number, prefix: string, status: PostRow['status']):
     createdAt: `2026-03-${String(Math.floor(Math.random() * 4) + 1).padStart(2, '0')} ${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
     activityName: activityNames[Math.floor(Math.random() * activityNames.length)],
     platform: platformNames[Math.floor(Math.random() * platformNames.length)],
-    platformUrl: 'https://www.xiaohongshu.com'
+    platformUrl: 'https://www.xiaohongshu.com',
+    isFeatured: status === '已通过' ? i % 3 === 0 : false,
+    ipCategory: ipCategoryNames[Math.floor(Math.random() * ipCategoryNames.length)],
+    workAttribute: workAttributeNames[Math.floor(Math.random() * workAttributeNames.length)],
   }))
 }
 

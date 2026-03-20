@@ -9,11 +9,12 @@
     <div id="root"></div>
     <script>
       const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(location.hostname)
+      const appBase = location.pathname.startsWith('/creator-community-admin/') ? '/creator-community-admin/' : '/'
       const script = document.createElement('script')
       script.type = 'module'
 
       if (isLocalHost) {
-        script.src = '/src/main.tsx'
+        script.src = `${appBase}src/main.tsx`
       } else {
         const link = document.createElement('link')
         link.rel = 'stylesheet'

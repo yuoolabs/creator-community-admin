@@ -15,6 +15,7 @@ export type CreatorManagementRow = {
   badges: CreatorBadge[]
   extraBadgeCount?: number
   verifiedPlatforms: string[]
+  certificationTime: string
 }
 
 
@@ -29,6 +30,7 @@ export const creatorManagementRows: CreatorManagementRow[] = [
     works: 42,
     badges: ['trophy', 'settings'],
     verifiedPlatforms: ['小红书', '抖音'],
+    certificationTime: '2025-12-18',
   },
   {
     id: 'cm-2',
@@ -40,6 +42,7 @@ export const creatorManagementRows: CreatorManagementRow[] = [
     works: 12,
     badges: ['up'],
     verifiedPlatforms: ['抖音'],
+    certificationTime: '2026-01-06',
   },
   {
     id: 'cm-3',
@@ -52,6 +55,7 @@ export const creatorManagementRows: CreatorManagementRow[] = [
     badges: ['star', 'diamond'],
     extraBadgeCount: 2,
     verifiedPlatforms: ['小红书', '抖音', '哔哩哔哩'],
+    certificationTime: '2025-08-22',
   },
   {
     id: 'cm-4',
@@ -64,6 +68,7 @@ export const creatorManagementRows: CreatorManagementRow[] = [
     works: 28,
     badges: [],
     verifiedPlatforms: ['哔哩哔哩'],
+    certificationTime: '2026-02-10',
   },
   {
     id: 'cm-5',
@@ -75,6 +80,6 @@ export const creatorManagementRows: CreatorManagementRow[] = [
     works: 1,
     badges: [],
     verifiedPlatforms: [],
+    certificationTime: '2026-03-01',
   },
 ]
-

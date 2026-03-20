@@ -1,5 +1,5 @@
 import { LeftOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Form, Input, Radio, Upload, message } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, Select, Upload, message } from 'antd'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
@@ -33,6 +33,7 @@ export default function CampaignEditPage() {
                 coverUrl: mockCover,
                 status: mockStatus,
                 type: '图文征集',
+                activitySort: 1,
                 rule: '1. 参与者需发布原创合规内容...\n2. 内容需包含指定标签...',
             })
         }
@@ -81,15 +82,27 @@ export default function CampaignEditPage() {
                 disabled={isDetail}
             >
                 <Form.Item
+                    label="活动名称"
+                    name="name"
+                    rules={[{ required: true, message: '请输入活动名称' }]}
+                >
+                    <Input placeholder="请输入活动名称" maxLength={30} showCount style={{ background: '#fff' }} />
+                </Form.Item>
+
+                <Form.Item
                     label="活动类型"
                     name="type"
                     rules={[{ required: true, message: '请选择活动类型' }]}
                 >
-                    <Radio.Group>
-                        <Radio value="图文征集">图文征集</Radio>
-                        <Radio value="视频挑战">视频挑战</Radio>
-                        <Radio value="直播任务">直播任务</Radio>
-                    </Radio.Group>
+                    <Select
+                        placeholder="请选择活动类型"
+                        style={{ background: '#fff' }}
+                        options={[
+                            { value: '图文征集', label: '图文征集' },
+                            { value: '视频挑战', label: '视频挑战' },
+                            { value: '直播任务', label: '直播任务' },
+                        ]}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -97,15 +110,21 @@ export default function CampaignEditPage() {
                     name="timeRange"
                     rules={[{ required: true, message: '请选择活动时间' }]}
                 >
-                    <RangePicker style={{ width: 350 }} placeholder={['开始日期', '结束日期']} />
+                    <RangePicker style={{ width: 350, background: '#fff' }} placeholder={['开始日期', '结束日期']} />
                 </Form.Item>
 
                 <Form.Item
-                    label="活动名称"
-                    name="name"
-                    rules={[{ required: true, message: '请输入活动名称' }]}
+                    label="活动排序"
+                    name="activitySort"
+                    rules={[{ required: true, message: '请输入活动排序' }]}
                 >
-                    <Input placeholder="请输入活动名称" maxLength={30} showCount />
+                    <InputNumber
+                        style={{ width: '100%', background: '#fff' }}
+                        placeholder="请输入活动排序，数字越大排序越靠前"
+                        min={0}
+                        precision={0}
+                        controls={false}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -117,6 +136,7 @@ export default function CampaignEditPage() {
                         maxLength={500}
                         showCount
                         rows={4}
+                        style={{ background: '#fff' }}
                     />
                 </Form.Item>
 
