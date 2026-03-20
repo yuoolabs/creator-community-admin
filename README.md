@@ -33,3 +33,13 @@ npm run dev
 ```bash
 npm run build
 ```
+
+## GitHub Pages 部署
+
+项目已内置 GitHub Actions 发布流程，推送到 `main` 后会自动构建并发布到 GitHub Pages。
+
+1. 在仓库的 GitHub Pages 设置里把发布源切换为 `GitHub Actions`
+2. 提交并推送代码到 `main`
+3. 等待 `.github/workflows/deploy-pages.yml` 执行完成
+
+如果访问子路由后刷新页面，`public/404.html` 会自动将请求回退到 SPA 入口，避免 GitHub Pages 出现白屏或 404。
