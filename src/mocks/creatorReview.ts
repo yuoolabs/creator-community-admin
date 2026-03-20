@@ -77,7 +77,7 @@ export const creatorRows: CreatorReviewRow[] = [
 ]
 
 export const platformOptions = [
-  { label: '所有平台', value: 'all' },
+  { label: '所属平台', value: 'all' },
   { label: '小红书', value: '小红书' },
   { label: '抖音', value: '抖音' },
   { label: '哔哩哔哩', value: '哔哩哔哩' },

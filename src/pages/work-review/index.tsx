@@ -771,8 +771,26 @@ export default function WorkReviewPage() {
             </div>
           </Form.Item>
 
-          <Form.Item label="创作值" name="score">
-            <InputNumber min={0} max={100} style={{ width: 120 }} />
+          <Form.Item label="创作值" style={{ marginBottom: 24 }}>
+            <Form.Item name="score" hidden>
+              <InputNumber />
+            </Form.Item>
+            <Form.Item noStyle shouldUpdate>
+              {({ getFieldValue }) => (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    minWidth: 40,
+                    color: '#475569',
+                    fontSize: 16,
+                    lineHeight: '32px',
+                    fontWeight: 500,
+                  }}
+                >
+                  {getFieldValue('score')}
+                </span>
+              )}
+            </Form.Item>
           </Form.Item>
 
           <Form.Item label="优秀作品" name="isFeatured" valuePropName="checked">

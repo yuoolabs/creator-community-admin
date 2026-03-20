@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>创作者社区 - 管理后台</title>
+    <script>
+      const repoBase = '/creator-community-admin'
+      const routePath = location.pathname.replace(repoBase, '') || '/'
+      const routeQuery = location.search || ''
+      const routeHash = location.hash || ''
+      const redirectTarget = `${repoBase}/?p=${encodeURIComponent(`${routePath}${routeQuery}${routeHash}`)}`
+
+      location.replace(redirectTarget)
+    </script>
+  </head>
+  <body></body>
+</html>

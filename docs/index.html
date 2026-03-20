@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>创作者社区 - 管理后台</title>
+    <script type="module" crossorigin src="/creator-community-admin/assets/index-BOv6lKvn.js"></script>
+    <link rel="stylesheet" crossorigin href="/creator-community-admin/assets/index-gTfbrt57.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const redirectPath = new URLSearchParams(window.location.search).get('p')
+
+      if (redirectPath) {
+        const base = '/creator-community-admin'
+        const normalizedPath = redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`
+        window.history.replaceState(null, '', `${base}${normalizedPath}`)
+      }
+    </script>
+  </body>
+</html>
