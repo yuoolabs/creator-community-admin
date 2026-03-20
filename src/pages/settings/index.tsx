@@ -468,19 +468,6 @@ export default function SettingsPage() {
                     <Text>可以获得</Text>
                     <InputNumber defaultValue={2} style={{ width: 80 }} />
                     <Text>创作值</Text>
-                    <Select
-                      defaultValue="daily"
-                      style={{ width: 100 }}
-                      options={[
-                        { label: '活动中', value: 'campaign' },
-                        { label: '每日', value: 'daily' },
-                        { label: '每周', value: 'weekly' },
-                        { label: '每月', value: 'monthly' },
-                      ]}
-                    />
-                    <Text>最多可以获得</Text>
-                    <InputNumber defaultValue={50} style={{ width: 80 }} />
-                    <Text>次</Text>
                   </div>
                 </div>
 
@@ -495,19 +482,6 @@ export default function SettingsPage() {
                     <Text>可以获得</Text>
                     <InputNumber defaultValue={3} style={{ width: 80 }} />
                     <Text>创作值</Text>
-                    <Select
-                      defaultValue="daily"
-                      style={{ width: 100 }}
-                      options={[
-                        { label: '活动中', value: 'campaign' },
-                        { label: '每日', value: 'daily' },
-                        { label: '每周', value: 'weekly' },
-                        { label: '每月', value: 'monthly' },
-                      ]}
-                    />
-                    <Text>最多可以获得</Text>
-                    <InputNumber defaultValue={30} style={{ width: 80 }} />
-                    <Text>次</Text>
                   </div>
                 </div>
               </div>

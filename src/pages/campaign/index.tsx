@@ -332,9 +332,14 @@ export default function CampaignPage() {
         >
           查询
         </Button>
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
           <Button type="primary" onClick={() => navigate('/campaign/new')}>
             添加活动
+          </Button>
+          <Button
+            onClick={() => message.info('推广活动主页功能建设中')}
+          >
+            推广活动主页
           </Button>
         </div>
       </FilterCard>

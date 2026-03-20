@@ -140,7 +140,7 @@ export default function WorkReviewPage() {
     已删除: { text: '已删除', color: '#94a3b8', dot: '●' },
   }
   const currentStatus = (selectedWork?.status ?? '待审核') as TabKey
-  const showAuditMeta = currentStatus === '已拒绝' || currentStatus === '已删除'
+  const showAuditMeta = currentStatus !== '待审核'
 
   const handleActivityClick = (activityName: string) => {
     // Navigate to campaign page with search filter (simulated)
