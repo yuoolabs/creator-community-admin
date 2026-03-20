@@ -16,12 +16,13 @@
       if (isLocalHost) {
         script.src = `${appBase}src/main.tsx`
       } else {
+        const assetVersion = '01b8389'
         const link = document.createElement('link')
         link.rel = 'stylesheet'
-        link.href = '/creator-community-admin/assets/main.css'
+        link.href = `/creator-community-admin/assets/main.css?v=${assetVersion}`
         document.head.appendChild(link)
 
-        script.src = '/creator-community-admin/assets/main.js'
+        script.src = `/creator-community-admin/assets/main.js?v=${assetVersion}`
       }
 
       document.head.appendChild(script)
