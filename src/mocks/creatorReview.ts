@@ -18,7 +18,7 @@ export const statusStyles: StatusStyleMap = {
     color: '#b91c1c',
     bg: '#fef2f2',
     border: '#fecaca',
-    text: '已驳回',
+    text: '已拒绝',
   },
 }
 
