@@ -597,9 +597,18 @@ export default function WorkReviewPage() {
                 <span style={{ fontWeight: 500 }}>{selectedWork?.authorName}</span>
               </div>
 
-              {/* 标题 */}
-              <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <span style={{ flex: 1 }}>{selectedWork?.title}</span>
+              {/* 作品描述 */}
+              <div
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.7,
+                  color: '#334155',
+                  marginBottom: 8,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {selectedWork?.description || selectedWork?.title}
               </div>
 
               {/* 时间 */}

@@ -1,6 +1,7 @@
 export type PostRow = {
   id: string
   title: string
+  description?: string
   coverUrl: string
   authorAvatar: string
   authorName: string
@@ -95,25 +96,30 @@ const covers = [
 ]
 
 function generateRows(count: number, prefix: string, status: PostRow['status']): PostRow[] {
-  return Array.from({ length: count }).map((_, i) => ({
-    id: `${prefix}-${i}`,
-    title: titles[Math.floor(Math.random() * titles.length)],
-    coverUrl: covers[Math.floor(Math.random() * covers.length)],
-    authorAvatar: avatars[Math.floor(Math.random() * avatars.length)],
-    authorName: names[Math.floor(Math.random() * names.length)],
-    authorId: String(340000 + Math.floor(Math.random() * 1000)),
-    status,
-    likes: Math.floor(Math.random() * 1000),
-    comments: Math.floor(Math.random() * 100),
-    views: Math.floor(Math.random() * 20000),
-    createdAt: `2026-03-${String(Math.floor(Math.random() * 4) + 1).padStart(2, '0')} ${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-    activityName: activityNames[Math.floor(Math.random() * activityNames.length)],
-    platform: platformNames[Math.floor(Math.random() * platformNames.length)],
-    platformUrl: 'https://www.xiaohongshu.com',
-    isFeatured: status === '已通过' ? i % 3 === 0 : false,
-    ipCategory: ipCategoryNames[Math.floor(Math.random() * ipCategoryNames.length)],
-    workAttribute: workAttributeNames[Math.floor(Math.random() * workAttributeNames.length)],
-  }))
+  return Array.from({ length: count }).map((_, i) => {
+    const title = titles[Math.floor(Math.random() * titles.length)]
+
+    return {
+      id: `${prefix}-${i}`,
+      title,
+      description: title,
+      coverUrl: covers[Math.floor(Math.random() * covers.length)],
+      authorAvatar: avatars[Math.floor(Math.random() * avatars.length)],
+      authorName: names[Math.floor(Math.random() * names.length)],
+      authorId: String(340000 + Math.floor(Math.random() * 1000)),
+      status,
+      likes: Math.floor(Math.random() * 1000),
+      comments: Math.floor(Math.random() * 100),
+      views: Math.floor(Math.random() * 20000),
+      createdAt: `2026-03-${String(Math.floor(Math.random() * 4) + 1).padStart(2, '0')} ${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
+      activityName: activityNames[Math.floor(Math.random() * activityNames.length)],
+      platform: platformNames[Math.floor(Math.random() * platformNames.length)],
+      platformUrl: 'https://www.xiaohongshu.com',
+      isFeatured: status === '已通过' ? i % 3 === 0 : false,
+      ipCategory: ipCategoryNames[Math.floor(Math.random() * ipCategoryNames.length)],
+      workAttribute: workAttributeNames[Math.floor(Math.random() * workAttributeNames.length)],
+    }
+  })
 }
 
 const generated = [
