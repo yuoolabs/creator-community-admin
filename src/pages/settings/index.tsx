@@ -1,10 +1,11 @@
-import { Button, Checkbox, Form, Select, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message, Radio, Upload } from 'antd'
+import { Button, Checkbox, Form, Space, Switch, Typography, InputNumber, Table, Modal, Input, Popconfirm, message, Radio, Upload, Image } from 'antd'
 import { QuestionCircleOutlined, HolderOutlined, CloseCircleFilled, PlusOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { themeColors } from '../../theme/colors'
 import { loadXxxxCategories, saveXxxxCategories, type XxxxCategoryItem } from '../../mocks/xxxxCategories'
 
 const { Text, Title, Link } = Typography
+const CATEGORY_IMAGE_PLACEHOLDER = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=240&h=240&fit=crop'
 
 // 类目设置组件
 function CategorySettings() {
@@ -195,6 +196,7 @@ function XxCategorySettings() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [form] = Form.useForm()
+  const [categoryImageUrl, setCategoryImageUrl] = useState<string | null>(null)
 
   const [categories, setCategories] = useState<XxxxCategoryItem[]>(() => loadXxxxCategories())
 
@@ -221,20 +223,47 @@ function XxCategorySettings() {
   const handleAdd = () => {
     setEditingItem(null)
     form.resetFields()
+    setCategoryImageUrl(null)
     setIsModalOpen(true)
   }
 
   const handleEdit = (record: any) => {
     setEditingItem(record)
-    form.setFieldsValue({ name: record.name })
+    setCategoryImageUrl(record.imageUrl ?? null)
+    form.setFieldsValue({ name: record.name, imageUrl: record.imageUrl ?? null })
     setIsModalOpen(true)
+  }
+
+  const handleCategoryImageUpload = (file: File) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+    if (!isJpgOrPng) {
+      message.error('只允许上传 JPG 或 PNG 格式图片!')
+      return false
+    }
+
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      message.error('品类图片大小必须小于 2MB!')
+      return false
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const value = e.target?.result as string
+      setCategoryImageUrl(value)
+      form.setFieldValue('imageUrl', value)
+    }
+    reader.readAsDataURL(file)
+    return false
   }
 
   const handleModalOk = () => {
     form.validateFields().then(values => {
+      const imageUrl = values.imageUrl || categoryImageUrl || CATEGORY_IMAGE_PLACEHOLDER
+
       if (editingItem) {
         updateCategories(prev => prev.map(item =>
-          item.id === editingItem.id ? { ...item, name: values.name } : item
+          item.id === editingItem.id ? { ...item, name: values.name, imageUrl } : item
         ))
         message.success('类目已更新')
       } else {
@@ -245,7 +274,8 @@ function XxCategorySettings() {
           count: 0,
           status: true,
           createdAt: new Date().toISOString().replace('T', ' ').split('.')[0],
-          isMovable: true
+          isMovable: true,
+          imageUrl,
         }])
         message.success('类目已添加')
       }
@@ -263,6 +293,34 @@ function XxCategorySettings() {
           {record.isMovable && <HolderOutlined style={{ color: '#94a3b8', cursor: 'grab' }} />}
           <span style={{ color: '#1e293b', fontWeight: 500 }}>{text}</span>
         </Space>
+      ),
+    },
+    {
+      title: '品类图片',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
+      width: 112,
+      render: (imageUrl: string, record: any) => (
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 12,
+            overflow: 'hidden',
+            border: '1px solid #e2e8f0',
+            background: '#f8fafc',
+            flexShrink: 0,
+          }}
+        >
+          <Image
+            src={imageUrl || CATEGORY_IMAGE_PLACEHOLDER}
+            alt={record.name}
+            preview={false}
+            width={56}
+            height={56}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
       ),
     },
     {
@@ -343,20 +401,26 @@ function XxCategorySettings() {
       <Modal
         title={editingItem ? "编辑品类" : "添加品类"}
         open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false)
+          setCategoryImageUrl(null)
+        }}
         onOk={handleModalOk}
         okText="确定"
         cancelText="取消"
         centered
-        width={480}
+        width={560}
         bodyStyle={{ paddingTop: 32, paddingBottom: 64 }}
       >
         <Form form={form} layout="horizontal" colon={false}>
+          <Form.Item name="imageUrl" hidden rules={[{ required: true, message: '请上传品类图片' }]}>
+            <Input />
+          </Form.Item>
           <Form.Item
             name="name"
             label={<span style={{ color: '#1e293b', fontWeight: 500 }}>品类名称：</span>}
             rules={[{ required: true, message: '请输入品类名称' }]}
-            style={{ marginBottom: 0 }}
+            style={{ marginBottom: 20 }}
           >
             <Input
               placeholder="请输入品类名称"
@@ -364,6 +428,52 @@ function XxCategorySettings() {
               showCount
               style={{ width: '100%' }}
             />
+          </Form.Item>
+
+          <Form.Item
+            label={<span style={{ color: '#1e293b', fontWeight: 500 }}>品类图片：</span>}
+            required
+            style={{ marginBottom: 0 }}
+          >
+            <div>
+              <Upload
+                showUploadList={false}
+                beforeUpload={handleCategoryImageUpload}
+                accept="image/jpeg,image/png"
+              >
+                <div
+                  style={{
+                    width: 96,
+                    height: 96,
+                    borderRadius: 12,
+                    border: '1px dashed #cbd5e1',
+                    background: '#f8fafc',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    position: 'relative',
+                  }}
+                >
+                  {categoryImageUrl ? (
+                    <img
+                      src={categoryImageUrl}
+                      alt="品类图片"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                      <PlusOutlined style={{ color: '#94a3b8', fontSize: 22 }} />
+                      <Text type="secondary" style={{ fontSize: 12 }}>上传图片</Text>
+                    </div>
+                  )}
+                </div>
+              </Upload>
+              <Text type="secondary" style={{ display: 'block', marginTop: 10, fontSize: 12 }}>
+                建议上传 1:1 图片，支持 JPG、PNG，大小不超过 2MB
+              </Text>
+            </div>
           </Form.Item>
         </Form>
       </Modal>
