@@ -1,8 +1,10 @@
 import { Drawer, Grid, Layout, Menu, Typography } from 'antd'
 import type { MenuProps } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import PageAnnotationMode from '../components/common/PageAnnotationMode'
 import { managementNavItems } from '../mocks/nav'
+import { getPageAnnotation } from '../mocks/pageAnnotations'
 
 const { Sider, Content } = Layout
 const { useBreakpoint } = Grid
@@ -19,12 +21,23 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const screens = useBreakpoint()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [annotationOpen, setAnnotationOpen] = useState(false)
   const isDesktop = Boolean(screens.lg)
+  const currentAnnotation = getPageAnnotation(location.pathname)
   const selectedMenuKey = location.pathname.startsWith('/creator-management')
     ? '/creator-management'
     : location.pathname.startsWith('/campaign')
       ? '/campaign'
       : location.pathname
+
+  useEffect(() => {
+    const savedValue = window.localStorage.getItem('admin-annotation-mode')
+    setAnnotationOpen(savedValue === 'open')
+  }, [])
+
+  useEffect(() => {
+    window.localStorage.setItem('admin-annotation-mode', annotationOpen ? 'open' : 'closed')
+  }, [annotationOpen])
 
   const onMenuClick: MenuProps['onClick'] = ({ key }) => {
     navigate(String(key))
@@ -77,6 +90,12 @@ export default function AdminLayout() {
           <Outlet />
         </Content>
       </Layout>
+
+      <PageAnnotationMode
+        open={annotationOpen}
+        annotation={currentAnnotation}
+        onToggle={() => setAnnotationOpen((value) => !value)}
+      />
     </Layout>
   )
 }
