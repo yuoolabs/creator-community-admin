@@ -35,10 +35,10 @@ type WorkItem = {
 
 type ActivityParticipationItem = {
   key: string
-  activityName: string
   activityId: string
-  publishTime: string
-  workId: string
+  activityName: string
+  participationCount: number
+  featuredWorkCount: number
 }
 
 const workCoverRows = postRows.slice(0, 6)
@@ -113,13 +113,29 @@ const works: WorkItem[] = [
   },
 ]
 
-const activityParticipationRows: ActivityParticipationItem[] = works.map((work, index) => ({
-  key: `${work.id}-${index}`,
-  activityName: postRows[index]?.activityName ?? `活动 ${index + 1}`,
-  activityId: String(480000 + index * 137),
-  publishTime: work.date,
-  workId: work.id,
-}))
+const activityParticipationRows: ActivityParticipationItem[] = works.reduce<ActivityParticipationItem[]>(
+  (list, _work, index) => {
+    const activityName = postRows[index]?.activityName ?? `活动 ${index + 1}`
+    const existingActivity = list.find((item) => item.activityName === activityName)
+
+    if (existingActivity) {
+      existingActivity.participationCount += 1
+      existingActivity.featuredWorkCount += postRows[index]?.isFeatured ? 1 : 0
+      return list
+    }
+
+    list.push({
+      key: activityName,
+      activityId: String(480000 + index * 137),
+      activityName,
+      participationCount: 1,
+      featuredWorkCount: postRows[index]?.isFeatured ? 1 : 0,
+    })
+
+    return list
+  },
+  [],
+)
 
 const availableBadges = [
   { id: 'b1', label: '百大创作者', icon: <TrophyFilled />, color: 'gold' },
@@ -185,27 +201,27 @@ export default function CreatorDetailPage() {
 
   const activityColumns: ColumnsType<ActivityParticipationItem> = [
     {
-      title: '活动名称',
-      dataIndex: 'activityName',
-      key: 'activityName',
-    },
-    {
       title: '活动 ID',
       dataIndex: 'activityId',
       key: 'activityId',
       width: 140,
     },
     {
-      title: '作品发布时间',
-      dataIndex: 'publishTime',
-      key: 'publishTime',
-      width: 180,
+      title: '活动名称',
+      dataIndex: 'activityName',
+      key: 'activityName',
     },
     {
-      title: '作品 ID',
-      dataIndex: 'workId',
-      key: 'workId',
-      width: 120,
+      title: '参与作品数',
+      dataIndex: 'participationCount',
+      key: 'participationCount',
+      width: 140,
+    },
+    {
+      title: '优秀作品数',
+      dataIndex: 'featuredWorkCount',
+      key: 'featuredWorkCount',
+      width: 140,
     },
   ]
 
